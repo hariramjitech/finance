@@ -9,6 +9,7 @@ const { convertCurrency } = require('../utils');
 router.get('/', protect, async (req, res) => {
     const recurring = await RecurringTransaction.find({ userId: req.user._id }).lean();
 
+    
     const userCurrency = req.user.currency || 'INR';
     const convertedRecurring = recurring.map(r => ({
         ...r,
