@@ -1,0 +1,202 @@
+FinancePro AI - Comprehensive System Report
+==================================================
+PROJECT STATUS: ACTIVE & STABLE
+LATEST UPDATE: December 2025 (Optimized & Perfected)
+==================================================
+
+==================================================
+AVAILABLE FEATURES (V2.0 Core)
+==================================================
+
+1.  🔐 ADVANCED AUTHENTICATION & PROFILE
+    - **Secure Auth**: JWT (JSON Web Token) with Bcrypt password hashing.
+    - **Forgot Password Flow**: Secure email dispatch with hashed reset token stored in DB (Expires in 10 mins).
+    - **Profile Management**: Update name, email, currency (multi-currency support), and occupation.
+    - **Avatar System**: Image upload to Cloudinary with auto-cleanup of local files.
+    - **Gamification**: 
+        - XP System: User gains XP for adding transactions (5 XP) or bulk imports.
+        - Streak Tracking: Daily login streaks tracked via `lastLogin` field.
+        - Leaderboard: Top 10 active users ranked by XP.
+
+2.  📊 INTELLIGENT DASHBOARD
+    - **Real-time KPI Cards**: Total Balance, Income, Expenses, Savings (Auto-calculated).
+    - **Financial Health Score**: Dynamic 0-100 score based on savings ratio, budget adherence, and investments.
+    - **Activity Feed**: Recent transactions with visual indicators.
+    - **Predictive Analytics**: AI Widget showing "Projected Savings" vs "Warning" if expense trend is high.
+
+3.  💸 TRANSACTION MANAGEMENT
+    - **Flexible Logic**: Negative balances allowed (supports credit/debt scenarios) with UI warnings.
+    - **Full CRUD**: Create, Read, Update, Delete transactions.
+    - **Bulk Import**: `POST /bulk` endpoint for importing massive datasets (CSV/JSON style).
+    - **Smart Filters**: Date Range, Category, Type, Limit.
+    - **Fraud Detection**: AI-based heuristic check (blocking anomalies > 5x deviation).
+
+4.  🧠 AI FINANCIAL ADVISOR (GEMINI POWERED)
+    - **Context-Aware Chatbot**: "FinBot" knows your real-time balance, budgets, and debts.
+    - **Voice/Text Operations**: Natural Language Processing (NLP) converts "Spent 50 on Lunch" into a valid JSON transaction.
+    - **Smart OCR**: 
+        - Receipt Scanning: Extracts Merchant, Date, Amount (Jimp + Gemini Vision).
+        - Bank Statement Analyzer: Tesseract.js + Regex parsing for multi-line extraction.
+
+5.  📉 ANALYTICS & FORECASTING
+    - **6-Month Forecast**: Linear regression model to predict future balance.
+    - **Monthly Comparison**: "This Month vs Last Month" split view.
+    - **Category Breakdown**: Aggregated expense distribution.
+    - **Family Analytics**: Cross-user spending analysis with currency normalization.
+
+6.  💰 SMART BUDGETING
+    - **AI Recommendations**: Analysis of 3-month spending history to suggest realistic limits.
+    - **Budget Adherence**: Real-time tracking of "Spent vs Limit".
+    - **Blocking Logic (Optional)**: Can restrict creating budgets if wallet balance is insufficient.
+
+7.  👨‍👩‍👧‍👦 FAMILY FINANCE SYNC
+    - **Invite System**: Generate unique code to invite members.
+    - **Shared Goals**: Family members can contribute to common savings goals.
+    - **Unified Analytics**: View entire family's expense footprint in YOUR currency (Auto-converted).
+    - **Member Roles**: Admin (Creator) vs Member.
+
+8.  📈 INVESTMENTS & STOCKS
+    - **Live Market Data**: Yahoo Finance integration for Real-time Stock/Crypto prices.
+    - **Portfolio Tracking**: Auto-updates "Current Value" based on market change %.
+    - **Buy/Sell Logic**:
+        - **Buy**: Deducts from Wallet Balance (creates Expense txn).
+        - **Sell**: Credits to Wallet Balance (creates Income txn) + Calculate Profit/Loss.
+    - **Stock Search**: Lookup symbols (AAPL, BTC-USD, etc.).
+
+9.  🎯 GOAL TRACKING
+    - **Visual Progress**: Dynamic bars showing Saved / Target %.
+    - **Contribution Flow**: `PUT /add` endpoint securely moves money from Wallet -> Goal.
+    - **Redemption**: "Cash Out" button moves money Goal -> Wallet (Income) when completed.
+    - **Badges**: Users earn "Goal Crusher" badge upon completion.
+
+10. 🔄 RECURRING & SUBSCRIPTIONS
+    - **Cron Job Engine**: Runs daily at Midnight to auto-process due payments.
+    - **Subscription Assassin**: AI scans expense history to detect recurring patterns and suggest subscriptions.
+    - **Graceful Retries**: If balance is low, alerts user and retries next day.
+
+11. 📄 REPORTS & EXPORTS
+    - **PDF Generation**: Professional financial report with Summary Stats & Transaction Table.
+    - **Email Delivery**: One-click "Email Report" sends PDF attachment via Nodemailer.
+    - **CSV Export**: Raw data download for Excel integration.
+
+12. 🏦 EMI / LOAN MANAGER
+    - **Loan Tracking**: Track Principal, Interest Rate, Due Date.
+    - **Integration**: EMIs show up in "Debts" context for AI Chat.
+
+13. 🛡️ SERVER ARCHITECTURE & SECURITY
+    - **Graceful Shutdown**: Handles SIGTERM/SIGINT to close DB connections cleanly.
+    - **Rate Limiting**: 
+        - General: 1000 req / 15 min.
+        - Auth: 30 req / 15 min (Brute-force protection).
+        - AI: 10 req / 1 min (Cost control).
+    - **Security Headers**: HPP (Parameter Pollution), XSS-Clean, MongoSanitize, Helmet.
+    - **Middleware**: robust `protect` middleware with proper error control flow.
+
+==================================================
+API ENDPOINTS DOCUMENTATION (Complete List)
+==================================================
+
+[ 🔐 AUTHENTICATION ]
+--------------------------------------------------
+POST    /api/auth/register                 - Register new user {name, email, password}
+POST    /api/auth/login                    - Login (Returns JWT Token + User Info)
+POST    /api/auth/forgotpassword           - Send Password Reset Email (Generates Token)
+PUT     /api/auth/resetpassword/:resettoken - Reset Password using Token
+
+[ 👤 USER & PROFILE ]
+--------------------------------------------------
+GET     /api/users/profile                 - Get User Details (XP, Streaks, Badge, Currency)
+PUT     /api/users/profile                 - Update Details {name, email, currency, profileInfo}
+POST    /api/users/profile-picture         - Upload Image (multipart/form-data: 'image')
+GET     /api/users/leaderboard             - Get Top 10 Users by XP
+
+[ 💸 TRANSACTIONS ]
+--------------------------------------------------
+GET     /api/transactions                  - List Txns (Query: startDate, endDate, category, type)
+POST    /api/transactions                  - Create Txn {type, amount, category, description, date}
+PUT     /api/transactions/:id              - Update Txn
+DELETE  /api/transactions/:id              - Delete Txn
+POST    /api/transactions/bulk             - Bulk Import { transactions: [...] }
+
+[ 🧠 AI & SMART FEATURES ]
+--------------------------------------------------
+POST    /api/ai/chat                       - Chat to FinBot { message: "How is my budget?" }
+POST    /api/ai/scan-receipt               - OCR Receipt Image (multipart/form-data: 'receipt')
+POST    /api/ai/scan-statement             - OCR Bank Statement (multipart: 'statement')
+POST    /api/ai/command                    - NLP Command { command: "Spent 100 on fuel" }
+
+[ 📉 ANALYTICS ]
+--------------------------------------------------
+GET     /api/analytics/dashboard           - Main Dashboard Data (Summary, Score, Predictions)
+GET     /api/analytics/breakdown           - Category-wise Expense Distribution
+GET     /api/analytics/monthly-comparison  - This Month vs Last Month Stats
+GET     /api/analytics/forecast            - 6-Month Budget Projection
+
+[ 💰 BUDGETS ]
+--------------------------------------------------
+GET     /api/budgets                       - List Budgets (includes 'spent' vs 'limit')
+POST    /api/budgets                       - Create Budget {category, limit, month, year}
+DELETE  /api/budgets/:id                   - Remove Budget
+GET     /api/budgets/recommend             - AI Recommendations based on history
+
+[ 👨‍👩‍👧‍👦 FAMILY ]
+--------------------------------------------------
+POST    /api/family/create                 - Create Family { name }
+POST    /api/family/join                   - Join via Code { inviteCode }
+GET     /api/family/members                - List Members
+GET     /api/family/analytics              - Family Spending Overview (Currency Normalized)
+POST    /api/family/leave                  - Leave/Delete Family
+
+[ 🎯 GOALS ]
+--------------------------------------------------
+GET     /api/goals                         - List Active Goals
+POST    /api/goals                         - Create Goal {title, targetAmount, deadline}
+PUT     /api/goals/:id/add                 - Contribute Money { amount }
+POST    /api/goals/:id/redeem              - Cash Out (Goal -> Wallet Income)
+DELETE  /api/goals/:id                     - Delete Goal
+
+[ 🔄 RECURRING & SUBSCRIPTIONS ]
+--------------------------------------------------
+GET     /api/recurring                     - List Recurring Items
+POST    /api/recurring                     - Add Recurring {amount, frequency, nextRunDate}
+DELETE  /api/recurring/:id                 - Stop Recurring
+POST    /api/recurring/scan                - AI Scan for subscriptions in history
+
+[ 📈 INVESTMENTS & STOCKS ]
+--------------------------------------------------
+GET     /api/investments                   - Portfolio (Enriched with Live Stock Prices)
+POST    /api/investments                   - Buy/Track {type, name, amount} (Deducts from Wallet)
+DELETE  /api/investments/:id               - Delete Entry
+POST    /api/investments/:id/sell          - Liquidate {sellAmount} (Adds Profit/Loss to Wallet)
+GET     /api/stocks/search                 - Search Symbols (Query: ?query=AAPL)
+GET     /api/stocks/recommendations        - AI Market Suggestions
+GET     /api/stocks/:symbol                - Get Live Quote
+
+[ 🏦 EMI / LOANS ]
+--------------------------------------------------
+GET     /api/emis                          - List Loans
+POST    /api/emis                          - Add Loan {loanName, amount, interestRate}
+DELETE  /api/emis/:id                      - Remove Loan
+
+[ 📄 REPORTS ]
+--------------------------------------------------
+GET     /api/reports/export                - Download CSV
+GET     /api/reports/download-pdf          - Download PDF (Query: ?startDate=...&endDate=...)
+POST    /api/reports/email-report          - Email PDF {targetEmail, startDate, endDate}
+
+[ 🔔 NOTIFICATIONS ]
+--------------------------------------------------
+GET     /api/notifications                 - List User Notifications
+PUT     /api/notifications/:id/read        - Mark Read
+DELETE  /api/notifications/:id             - Delete Single
+DELETE  /api/notifications                 - Clear All
+
+==================================================
+SYSTEM HEALTH
+==================================================
+[x] NODE_ENV    : Development / Production
+[x] DATABASE    : MongoDB Atlas (Healthy)
+[x] AI ENGINE   : Google Gemini 1.5 Flash
+[x] CRON JOBS   : Active (00:00 Daily)
+
+Report Generated by AntiGravity Agent
