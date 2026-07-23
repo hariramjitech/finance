@@ -15,6 +15,10 @@
       "destination": { "service": "backend" }
     },
     {
+      "source": "/((?!api/|assets/|[^/]+\\.[^/]+$).*)",
+      "destination": { "service": "frontend", "path": "/index.html" }
+    },
+    {
       "source": "/(.*)",
       "destination": { "service": "frontend" }
     }
