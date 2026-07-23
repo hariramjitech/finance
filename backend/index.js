@@ -56,7 +56,9 @@ mongoose.connect(config.MONGO_URI)
     })
     .catch((err) => {
         console.error('MongoDB Connection Error:', err.message);
-        process.exit(1);
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1);
+        }
     });
 
 // --- Routes ---
